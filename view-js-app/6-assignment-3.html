@@ -1,0 +1,53 @@
+<html>
+
+<head>
+    <script src="vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 1) Show a "result" of 'not there yet' as long as "value" is not equal to 37 - you can change "value" with the buttons. Print 'done' once you did it -->
+        <div>
+            <p>Current Value: {{ value }}</p>
+            <button @click="value += 5">Add 5</button>
+            <button @click="value += 1">Add 1</button>
+            <p>{{ output }}</p>
+        </div>
+        <!-- 2) Watch for changes in the "result" and reset the "value" after 5 seconds (hint: setTimeout(..., 5000) -->
+        <div>
+            <input type="text">
+            <p>{{ value }}</p>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                value: 0,
+                result: ''
+            },
+            computed: {
+                output: function () {
+                    var goal = 37;
+                    if (this.value === 0) return this.result = 'The value is 0.';
+                    if (this.value === goal) {
+                        return this.result = 'Done';
+                    }
+                    else {
+                        return this.result = this.value < goal ? 'not there yet' : 'you went over it';
+                    }
+                }
+            },
+            watch: {
+                result: function () {
+                    var vm = this;
+                    setTimeout(function () {
+                        vm.value = 0;
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

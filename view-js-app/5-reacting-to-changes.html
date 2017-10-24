@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <script src="vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <button v-on:click="counter++">Increase</button>
+        <button v-on:click="counter--">Decrease</button>
+        <p>Counter : {{counter}}</p>
+        <p>Result : {{result()}}</p>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                counter: 0
+            },
+            computed: {
+                // most optimal solution
+                output: function () {
+                    return this.counter > 5 ? 'Greater than 5' : 'Less than 5';
+                }
+            },
+            watch: {
+                // watches changes in the data.counter prop
+                counter: function (value) {
+                    var vm = this;
+                    setTimeout(function () {
+                        vm.counter = 0;
+                    }, 2000)
+                }
+            },
+            methods: {
+                result() {
+                    return this.counter > 5 ? 'Greater than 5' : 'Less than 5';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

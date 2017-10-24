@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <script src="vue.js"></script>
+</head>
+
+<body>
+    <div id="exercise">
+        <p>VueJs is pretty cool - {{ name }} ({{ age }})</p>
+        <p>Age * 3 is {{ age * 3 }}</p>
+        <p>Random number {{ getRandomNumber() }}</p>
+        <p>
+            <img width="400px" v-bind:src="imageUrl" alt="">
+        </p>
+        <p>
+            <input type="text" v-bind:value="name" />
+        </p>
+    </div>
+    <script>
+        new Vue({
+            el: '#exercise',
+            data: {
+                name: 'Ryan Ad',
+                age: 34,
+                imageUrl: 'https://techraptor.net/wp-content/uploads/2015/01/pc-gamer-logo.jpg'
+            },
+            methods: {
+                getRandomNumber: function() {
+                    return Math.random() > 0.5 ? 1 : 0;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

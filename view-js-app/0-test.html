@@ -1,0 +1,151 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div>Role ID:</div>
+        <input type="number" v-model="roleEditor.id" />
+        <div>Role Name:</div>
+        <!-- @keyup.[key] is an event filter - means fire a function when an event happened and was triggered by the specified key -->
+        <input v-model="roleEditor.name" @keyup.enter="saveRole" /> (hit enter or click the button below to save)
+        <div>{{ status }}</div>
+        <p>
+            <!-- @[event] is the shorthand for v-on:[event] eg @click === v-on:click -->
+            <button :disabled="roleEntryExists" @click="saveRole">{{ this.roleEditor.idx === null ? 'Add' : 'Save' }}</button>
+        </p>
+        <hr>
+        <table>
+            <tr v-for="(role, index) in roles">
+                <td>{{ role.id }}</td>
+                <td>{{ role.name }}</td>
+                <td><a href="#" @click="editRole(role, index)">Edit</a></td>
+                <td><a href="#" @click="deleteRole(role)">Delete</a></td>
+            </tr>
+        </table>
+        <hr>
+        <h3>Dropdown Demo</h3>
+        <p>
+            <select v-model="selectedRole" @change="onRoleSelect">
+                <option v-for="role in roles" :value="role">
+                    {{ role.name }}
+                </option>
+            </select> => Id : {{ selectedRole.id }} / Name : {{ selectedRole.name }}
+        </p>
+        <h3>Result JSON</h3>
+        <p>
+            {{ rolesJson }}
+        </p>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                // this is where we hold the item currently being edited or added into the array.
+                roleEditor: {
+                    idx: null,
+                    id: null,
+                    name: null
+                },
+                roleEntryExists: false,
+                // this is the json string that comes form the input object
+                rolesJson: '[{"id":1,"name":"admin"},{"id":2,"name":"moderator"},{"id":3,"name":"user"}]',
+                // this is the collection where we can manipulate data from our json string
+                roles: [],
+                selectedRole: {
+                    id: 1,
+                    name: 'admin'
+                },
+                status: ''
+            },
+            watch: {
+                // watcher for roles - run handler anytime the data.roles collection change
+                roles: {
+                    // setup watcher to check changes on elements within the array
+                    deep: true,
+                    handler: function (val, oldVal) {
+                        this.rolesJson = JSON.stringify(val);
+                    }
+                },
+                roleEditor: {
+                    deep: true,
+                    handler: function (val, oldVal) {
+                        this.roleEntryExists = true;
+                        this.status = 'i am waiting for user to complete entry...'
+                        this.checkEntry();
+                    }
+                }
+            },
+            methods: {
+                init: function () {
+                    // initialize the ui
+                    this.roles = JSON.parse(this.rolesJson);;
+                },
+                // lodash debounce featuure lets you limit how many times an event can fire
+                checkEntry: _.debounce(function () {
+                    var roleEntry = { id: (this.roleEditor.id * 1), name: this.roleEditor.name };
+                    for (var i = 0; i < this.roles.length; i++) {
+                        var currItem = this.roles[i];
+                        if (currItem.id === roleEntry.id && currItem.name === roleEntry.name) {
+                            this.roleEntryExists = true;
+                            break;
+                        }
+                        this.roleEntryExists = false;
+                    }
+                    if (this.roleEntryExists) {
+                        this.status = 'role already exists or is still being validated. please wait.'
+                    }
+                    else {
+                        this.status = '';
+                    }
+                }, 1000),
+                editRole: function (role, index) {
+                    // setup the roleEditor for editing
+                    this.roleEditor.idx = index;
+                    this.roleEditor.id = role.id;
+                    this.roleEditor.name = role.name;
+                },
+                saveRole: function () {
+                    // save index as shorthand i
+                    if (this.roleEntryExists) {
+                        alert('duplicate entry detected...');
+                        return;
+                    }
+                    var i = this.roleEditor.idx;
+
+                    if (i === null) {
+                        // if role editor index is not null it means we're editing an existing element
+                        this.roles.push({
+                            id: this.roleEditor.id,
+                            name: this.roleEditor.name
+                        });
+                    }
+                    else {
+                        // add new role into the array
+                        this.roles[i].id = this.roleEditor.id;
+                        this.roles[i].name = this.roleEditor.name;
+                    }
+
+                    // reset the roleEditor
+                    this.roleEditor = { idx: null, id: null, name: null };
+                },
+                deleteRole: function (role) {
+                    // find the index of the record we want to delete
+                    var index = this.roles.indexOf(role);
+                    this.roles.splice(index, 1);
+                },
+                onRoleSelect: function () {
+                    console.log(this.selectedRole);
+                }
+            }
+        });
+
+        // initialize the UI
+        vm.init();
+    </script>
+</body>
+
+</html>
