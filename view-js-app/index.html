@@ -6,19 +6,19 @@
 
 <body>
     <div id="app">
-        
+        <input id="txtTitle" v-model="title" value="b" />
     </div>
     <script>
         new Vue({
             el: '#app',
             data: {
-                
+                title: 'a'
             },
-            methods: {
-                
+            created: function () {
+                this.title = document.getElementById('txtTitle').value;
             }
         });
     </script>
 </body>
 
-</html>
+</html>~~
